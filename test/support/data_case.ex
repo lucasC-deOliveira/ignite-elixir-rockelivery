@@ -2,10 +2,10 @@ defmodule Rockelivery.DataCase do
   @moduledoc """
   This module defines the setup for tests requiring
   access to the application's data layer.
-  
+
   You may define functions here to be used as helpers in
   your tests.
-  
+
   Finally, if the test case interacts with the database,
   we enable the SQL sandbox, so changes done to the database
   are reverted at the end of every test. If you are using
@@ -15,6 +15,8 @@ defmodule Rockelivery.DataCase do
   """
 
   use ExUnit.CaseTemplate
+
+  alias Ecto.Adapters.SQL.Sandbox
 
   using do
     quote do
@@ -28,10 +30,10 @@ defmodule Rockelivery.DataCase do
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Rockelivery.Repo)
+    :ok = Sandbox.checkout(Rockelivery.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(Rockelivery.Repo, {:shared, self()})
+      Sandbox.mode(Rockelivery.Repo, {:shared, self()})
     end
 
     :ok
@@ -39,11 +41,11 @@ defmodule Rockelivery.DataCase do
 
   @doc """
   A helper that transforms changeset errors into a map of messages.
-  
+
       assert {:error, changeset} = Accounts.create_user(%{password: "short"})
       assert "password is too short" in errors_on(changeset).password
       assert %{password: ["password is too short"]} = errors_on(changeset)
-  
+
   """
   def errors_on(changeset) do
     Ecto.Changeset.traverse_errors(changeset, fn {message, opts} ->
